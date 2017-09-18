@@ -15,6 +15,7 @@ namespace WordGuessGame1
         //This method runs the game navigation menu.
         static void GameNav(string filePath)
         {
+            Console.Clear();
             Console.WriteLine("Word Guessing game menu:");
             Console.WriteLine("please select a number from the following");
             string[] menuOptions = { " 1: New Game", " 2: Exit Game", " 3: Game Options" };
@@ -59,13 +60,14 @@ namespace WordGuessGame1
             {
                 case "1":
                     Console.Clear();
-                    ViewWord(LoadFile(filePath));// View all words
+                    ViewWord(LoadFile(filePath), filePath);// View all words
                     break;
                 case "2":
-                    // Add Words
+                    Console.Clear();
+                    AddWords(filePath); //add words
                     break;
                 case "3":
-                    // Delete 
+                    // Delete words
                     break;
                 case "4":
                     Console.Clear();
@@ -81,18 +83,43 @@ namespace WordGuessGame1
         }
         //--------------------- View Words --------------->
         //This method displays the words  from the content text file.
-        static void ViewWord(string[] words)
+        static void ViewWord(string[] words, string filePath)
         {
             foreach (string item in words)
             {
                 Console.WriteLine(item);
             }
+            Console.WriteLine("------------------------");
+            Console.WriteLine(" 4: back");
+            string input = Console.ReadLine();
+
+            if (input == "4")
+            {
+                GameNav(filePath);
+            }
         }
         //----------------------- Add Words ------------------>
         // This method adds words to the content text file.
-        static void AddWords()
+        static void AddWords(string filePath)
         {
-            //To Do
+            Console.WriteLine(" > Type the word you want to add");
+
+            string input = Console.ReadLine().ToLower();
+
+            using (StreamWriter sw = File.AppendText(filePath))
+            {
+                sw.Write(Environment.NewLine);
+                sw.WriteLine(input);
+            }
+            Console.WriteLine($" > {input} has bin added");
+            Console.WriteLine("------------------------");
+            Console.WriteLine(" 4: back");
+            string input2 = Console.ReadLine();
+
+            if (input2 == "4")
+            {
+                GameNav(filePath);
+            }
         }
         //------------------------ Delete ----------------------->
         // This method Removes words frome the content text file.
@@ -128,19 +155,32 @@ namespace WordGuessGame1
             Console.Clear();
             int hint = mysteryWord.Length;
             Console.WriteLine($" > Okay {userName} ");
+
             Console.WriteLine($" > The Mystery Word is {hint} letters long! ");
+            Console.WriteLine($"You will have");
             Console.WriteLine(" > Can you Guess what it is?");
 
             string input = Console.ReadLine().ToLower();
-            if (input == mysteryWord)
+
+            if (Validator(input, mysteryWord) == true)
             {
-                Console.WriteLine($" > {input} is correct!!!");
+                Console.WriteLine($" > {input} is a letter in the mysteryword");
             }
             else
             {
                 Console.WriteLine($" > Sorry {input} is not correct, the word was {mysteryWord}");
             }
         }
+        //----------------------- Validator --------------------------->
+        static bool Validator(string input, string mysteryWord)
+        {
+            bool isIT = false;
+            if (input.ToLower().Contains(mysteryWord))
+            {
+                isIT = true;
+            }
+            return isIT;
+        } 
         //----------------------- Load Text File ---------------------->
         //This method will load the default game text file.
         static string[] LoadFile(string filePath)
